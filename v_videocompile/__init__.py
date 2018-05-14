@@ -1,3 +1,11 @@
+"""
+Download and compile ffmpeg if absent, including
+dependencies
+
+--optimized for edX VEDA instances/subsidiaries, but
+could be expanded to include other use cases
+
+"""
 
 import os
 import sys
@@ -9,14 +17,6 @@ import shutil
 from os.path import expanduser
 home = expanduser("~")
 
-"""
-Download and compile ffmpeg if absent, including
-dependencies
-
---optimized for edX VEDA instances/subsidiaries, but 
-could be expanded to include other use cases
-
-"""
 
 class InstallError(Exception):
     """
@@ -25,7 +25,7 @@ class InstallError(Exception):
     pass
 
 
-class VideoCompile():
+class VideoCompile(object):
 
     def __init__(self, **kwargs):
 
@@ -46,13 +46,8 @@ class VideoCompile():
             )
         self.build_list = None
 
-
     def run(self):
         """
-        NOTE:
-        I was unable to get this to work politely with a variety of 
-        systems with any reliability, so I might back off
-
         old run (manual compile) is 'run()'
         new run (less good, more polite) is drun()
         """
@@ -64,9 +59,7 @@ class VideoCompile():
         if self.check() is True:
             return None
 
-        """
-        Run through compilation steps
-        """
+        # Run through compilation steps
         if self.prepare() is False:
             print '[ERROR] : FFmpeg install...\
                 Visit https://ffmpeg.org for instructions'
@@ -82,14 +75,11 @@ class VideoCompile():
                 )
             return None
 
-        """
-        failover to polite compile
-        """
+        # failover to polite compile
         self.polite_buildout()
         print '%s : %s' % (
             'ffmpeg/ffprobe installed', self.check()
             )
-
 
     def drun(self):
         if self.check() is True:
@@ -98,9 +88,7 @@ class VideoCompile():
                 )
             return None
 
-        """
-        Run through compilation steps
-        """
+        # Run through compilation steps
         if self.prepare() is False:
             print '[ERROR] : FFmpeg install...\
                 Visit https://ffmpeg.org for instructions'
@@ -108,7 +96,6 @@ class VideoCompile():
 
         self.polite_buildout()
         print '%s : %s' % ('ffmpeg/ffprobe installed', self.check())
-
 
     def check(self):
         """
@@ -130,17 +117,15 @@ class VideoCompile():
                 return False
         return False
 
-
     def prepare(self):
-
+        """
+        This should cascade down until it gets a hit
+        through Ubuntu, centOS, and finally OSX
+        """
         if not os.path.exists(self.build_repos):
             print '[ERROR] : no build yaml'
             return None
 
-        """
-        This should cascade down until it gets a hit 
-        through ubuntu, centos, and finally osx
-        """
         if platform.system() == 'Linux':
             if platform.linux_distribution()[0] == 'Ubuntu':
                 return self.ubuntu_prep()
@@ -149,9 +134,7 @@ class VideoCompile():
         elif platform.system() == 'Darwin':
             return self.darwin_prep()
         else:
-            """
-            Build out further platform extensability
-            """
+            # Build out further platform extensibility
             return False
 
     def ubuntu_prep(self):
@@ -213,7 +196,6 @@ class VideoCompile():
 
         return True
 
-
     def buildout(self):
         with open(self.build_repos, 'r') as stream:
             try:
@@ -225,16 +207,12 @@ class VideoCompile():
         for library in self.build_list:
             self.run_compile(library=library)
 
-
     def run_compile(self, library):
-        """
-        reset to start
-        """
-        os.chdir(self.compile_dir)
-
         """
         run dependency builds
         """
+        os.chdir(self.compile_dir)
+
         for key, entry in library.iteritems():
             print key
             '''
@@ -245,29 +223,20 @@ class VideoCompile():
             if 'curl' in entry['url']:
                 os.system(entry['url'])
                 self._EXEC(command=entry['unpack'])
-
             else:
-                # if platform.system() != 'Linux':
                 os.system('%s %s' % ('git clone', entry['url']))
-                # else:
-                    # os.system('%s %s' % ('sudo git clone', entry['url']))
 
-            if not os.path.exists(
-                os.path.join(self.compile_dir, entry['dir'])
-                ):
+            if not os.path.exists(os.path.join(self.compile_dir, entry['dir'])):
                 print '[ERROR] : expansion problem'
                 return None
 
-            """
-            compile dependency
-            """
+            # Compile dependency
             os.chdir(entry['dir'])
             for c in entry['commands']:
                 print '***********'
                 print c
                 print '***********'
                 self._EXEC(command=c)
-
 
     def _EXEC(self, command):
         if self.debug is True:
@@ -298,7 +267,6 @@ class VideoCompile():
                     x = 0
 
             sys.stdout.write('\n')
-
 
     def polite_buildout(self):
         """
@@ -350,5 +318,3 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
-
-

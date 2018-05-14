@@ -8,11 +8,11 @@ def readme():
 setup(
     name='v_videocompile',
     version='0.1',
-    description='Script to compile video tools for VEDA',
-    url='http://github.com/yro/v_videocompile',
-    author='@yro',
-    author_email='greg@willowgrain.io',
-    license='',
+    description='Script to compile video tools for VEDA machines',
+    url='http://github.com/edx/v_videocompile',
+    author="edX",
+    author_email="oscm@edx.org",
+    license="GNU",
     packages=['v_videocompile'],
     include_package_data=True,
     install_requires=[
