@@ -281,9 +281,9 @@ class VideoCompile(object):
             os.chdir(self.compile_dir)
             os.system(
                 'wget \
-                    http://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz'
+                    https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz'
                 )
-            os.system('tar -xf ffmpeg-release-64bit-static.tar.xz')
+            os.system('tar -xf ffmpeg-release-amd64-static.tar.xz')
 
             for f in os.listdir(self.compile_dir):
                 if os.path.isdir(os.path.join(self.compile_dir, f)):
