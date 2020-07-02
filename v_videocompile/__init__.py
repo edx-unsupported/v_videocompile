@@ -7,6 +7,8 @@ could be expanded to include other use cases
 
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import sys
 import yaml
@@ -15,6 +17,7 @@ import platform
 import shutil
 
 from os.path import expanduser
+import six
 home = expanduser("~")
 
 
@@ -61,41 +64,41 @@ class VideoCompile(object):
 
         # Run through compilation steps
         if self.prepare() is False:
-            print '[ERROR] : FFmpeg install...\
-                Visit https://ffmpeg.org for instructions'
+            print('[ERROR] : FFmpeg install...\
+                Visit https://ffmpeg.org for instructions')
             return None
 
         self.buildout()
-        print '%s : %s' % (
+        print('%s : %s' % (
             'ffmpeg/ffprobe installed', self.check()
-            )
+            ))
         if self.check() is True:
-            print '%s : %s' % (
+            print('%s : %s' % (
                 'ffmpeg/ffprobe installed', self.check()
-                )
+                ))
             return None
 
         # failover to polite compile
         self.polite_buildout()
-        print '%s : %s' % (
+        print('%s : %s' % (
             'ffmpeg/ffprobe installed', self.check()
-            )
+            ))
 
     def drun(self):
         if self.check() is True:
-            print '%s : %s' % (
+            print('%s : %s' % (
                 'ffmpeg/ffprobe installed', self.check()
-                )
+                ))
             return None
 
         # Run through compilation steps
         if self.prepare() is False:
-            print '[ERROR] : FFmpeg install...\
-                Visit https://ffmpeg.org for instructions'
+            print('[ERROR] : FFmpeg install...\
+                Visit https://ffmpeg.org for instructions')
             raise InstallError('ffmpeg installation failed')
 
         self.polite_buildout()
-        print '%s : %s' % ('ffmpeg/ffprobe installed', self.check())
+        print('%s : %s' % ('ffmpeg/ffprobe installed', self.check()))
 
     def check(self):
         """
@@ -123,7 +126,7 @@ class VideoCompile(object):
         through Ubuntu, centOS, and finally OSX
         """
         if not os.path.exists(self.build_repos):
-            print '[ERROR] : no build yaml'
+            print('[ERROR] : no build yaml')
             return None
 
         if platform.system() == 'Linux':
@@ -201,7 +204,7 @@ class VideoCompile(object):
             try:
                 self.build_list = yaml.load(stream)
             except yaml.YAMLError as exc:
-                print 'YAML Build error'
+                print('YAML Build error')
                 return None
         # run through and compile
         for library in self.build_list:
@@ -213,8 +216,8 @@ class VideoCompile(object):
         """
         os.chdir(self.compile_dir)
 
-        for key, entry in library.iteritems():
-            print key
+        for key, entry in six.iteritems(library):
+            print(key)
             '''
             clone 
             -or- 
@@ -227,15 +230,15 @@ class VideoCompile(object):
                 os.system('%s %s' % ('git clone', entry['url']))
 
             if not os.path.exists(os.path.join(self.compile_dir, entry['dir'])):
-                print '[ERROR] : expansion problem'
+                print('[ERROR] : expansion problem')
                 return None
 
             # Compile dependency
             os.chdir(entry['dir'])
             for c in entry['commands']:
-                print '***********'
-                print c
-                print '***********'
+                print('***********')
+                print(c)
+                print('***********')
                 self._EXEC(command=c)
 
     def _EXEC(self, command):
