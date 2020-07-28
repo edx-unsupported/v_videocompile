@@ -18,6 +18,7 @@ setup(
     install_requires=[
         'pyyaml',
         'nose',
+        'six',
         ],
     data_files=['build_repos.yaml'],
     scripts=['bin/v_videocompile'],
